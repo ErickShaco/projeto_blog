@@ -20,7 +20,7 @@ export default class UsuarioController {
     try {
       const usuarios = await UsuarioModel.findAll();
       if (usuarios.length === 0) {
-        res.status(200).json({ message: "Banco Vazio!" });
+        return res.status(200).json({ message: "Banco Vazio!" });
       }
       res.status(200).json(usuarios);
     } catch (error) {
@@ -45,7 +45,57 @@ export default class UsuarioController {
       });
     }
   }
-  static async editar(){
-    
+  static async editar(req, res) {
+    try {
+      const id = req.params.id;
+      const { nome, email, senha, foto_perfil } = req.body;
+      const usuario = await UsuarioModel.update(
+        { nome, email, senha, foto_perfil },
+        { where: { id } }
+      );
+      if (!usuario) {
+        return res.status(404).json({
+          message: "Usuario não encontrado!",
+        });
+      }
+      res.status(200).json({
+        message: "Usuario atualizado com sucesso!!",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Erro interno do servidor!",
+        erro: error.message,
+      });
+    }
+  }
+  static async deletarTodos(req, res) {
+    try {
+      await UsuarioModel.destroy({ truncate: true });
+      res.status(200).json({
+        message: "Todos os Usuarios foram deletados!",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Erro interno do servidor!",
+        erro: error.message,
+      });
+    }
+  }
+  static async deletarPorId(req, res) {
+    try {
+      const id = req.params.id;
+      const usuario = await UsuarioModel.destroy({ where: { id } });
+      if (!usuario) {
+        return res.status(404).json({ message: "Usuario não encontrado" });
+      }
+      res.status(200).json({
+        message: "Usuario deletado com sucesso!",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Erro interno do servidor!",
+        erro: error.message,
+      });
+    }
   }
 }

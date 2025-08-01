@@ -18,7 +18,11 @@ export default class UsuarioController {
   }
   static async listartodos(req, res) {
     try {
-      const usuarios = await UsuarioModel.findAll();
+      const usuarios = await UsuarioModel.findAll({
+        attributes: {
+          exclude: ["senha"],
+        },
+      });
       if (usuarios.length === 0) {
         return res.status(200).json({ message: "Banco Vazio!" });
       }
@@ -33,7 +37,11 @@ export default class UsuarioController {
   static async listarPorId(req, res) {
     try {
       const id = req.params.id;
-      const usuario = await UsuarioModel.findByPk(id);
+      const usuario = await UsuarioModel.findByPk(id,{
+        attributes: {
+          exclude: ["senha"],
+        },
+      });
       if (!usuario) {
         res.status(404).json({ message: "Usuario não encontrado!" });
       }
